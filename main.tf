@@ -1,3 +1,9 @@
-output "print" {
-  value = "Welcome to terraform --- env = ${var.env}"
+module "frontend" {
+  source = "./module/app"
+  env    = var.env
+  instance_type = var.instance_type
+  component = "frontend"
+  ssh_user  = var.ssh_user
+  ssh_pass  = var.ssh_pass
+  zone_id   = var.zone_id
 }
