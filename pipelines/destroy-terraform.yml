@@ -1,6 +1,6 @@
 format_version: 10
 pipelines:
-  terraform-ts-apply:
+  terraform-ts-destroy:
     group: terraformGroup
     label_template: ${COUNT}
     lock_behavior: none
