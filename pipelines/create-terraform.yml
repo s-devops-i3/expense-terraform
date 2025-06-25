@@ -1,0 +1,66 @@
+format_version: 10
+pipelines:
+  terraform-ts-apply:
+    group: terraformGroup
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      test-1:
+        git: https://github.com/s-devops-i3/expense-terraform.git
+        shallow_clone: false
+        auto_update: true
+        branch: main
+    stages:
+      - DEV:
+          fetch_materials: true
+          keep_artifacts: false
+          clean_workspace: false
+          environment_variables:
+            env: dev
+          approval:
+            type: manual
+            allow_only_on_success: false
+          jobs:
+            Dev-Job:
+              timeout: 0
+              tasks:
+                - exec:
+                    arguments:
+                      - terraform-run.sh
+                    command: bash
+                    run_if: passed
+      - QA:
+          fetch_materials: true
+          keep_artifacts: false
+          clean_workspace: false
+          approval:
+            type: manual
+            allow_only_on_success: false
+          jobs:
+            QA-job:
+              timeout: 0
+              tasks:
+                - exec:
+                    arguments:
+                      - terraform-run.sh
+                    command: bash
+                    run_if: passed
+      - PROD:
+          fetch_materials: true
+          keep_artifacts: false
+          clean_workspace: false
+          environment_variables:
+            env: prod
+          approval:
+            type: manual
+            allow_only_on_success: false
+          jobs:
+            Prod-job:
+              timeout: 0
+              tasks:
+                - exec:
+                    arguments:
+                      - terraform-run.sh
+                    command: bash
+                    run_if: passed
