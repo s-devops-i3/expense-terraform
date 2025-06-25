@@ -13,7 +13,7 @@ resource "null_resource" "ansible" {
 
     connection {
       type = "ssh"
-      ssh = var.ssh_user
+      user = var.ssh_user
       password = var.ssh_pass
       host = aws_instance.instance.public_ip
 
