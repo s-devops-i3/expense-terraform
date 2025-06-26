@@ -1,66 +1,24 @@
 format_version: 10
 pipelines:
-  terraform-ts-apply:
-    group: terraformGroup
-    label_template: ${COUNT}
-    lock_behavior: none
-    display_order: -1
+  expense-tf-apply:
+    group: Terraform
     materials:
-      test-1:
-        git: https://github.com/s-devops-i3/expense-terraform.git
+      git-da613e5:
+        git: https://github.com/raghudevopsb78/expense-terraform.git
         shallow_clone: false
         auto_update: true
         branch: main
+    secure_variables:
+      TF_VAR_vault_token: AES:Q67ao+nSos1av1ldpBh3nw==:FOP/PO/1Jxq3QtP+a2x3r3Biq1/WDjvIHSBY3g2Yplw=
     stages:
       - DEV:
           fetch_materials: true
-          keep_artifacts: false
-          clean_workspace: false
           environment_variables:
             env: dev
           approval:
             type: manual
-            allow_only_on_success: false
           jobs:
-            Dev-Job:
-              timeout: 0
+            terraform-apply:
               tasks:
-                - exec:
-                    arguments:
-                      - terraform-run.sh
-                    command: bash
-                    run_if: passed
-      - QA:
-          fetch_materials: true
-          keep_artifacts: false
-          clean_workspace: false
-          approval:
-            type: manual
-            allow_only_on_success: false
-          jobs:
-            QA-job:
-              timeout: 0
-              tasks:
-                - exec:
-                    arguments:
-                      - terraform-run.sh
-                    command: bash
-                    run_if: passed
-      - PROD:
-          fetch_materials: true
-          keep_artifacts: false
-          clean_workspace: false
-          environment_variables:
-            env: prod
-          approval:
-            type: manual
-            allow_only_on_success: false
-          jobs:
-            Prod-job:
-              timeout: 0
-              tasks:
-                - exec:
-                    arguments:
-                      - terraform-run.sh
-                    command: bash
-                    run_if: passed
+                - exec: {command: terraform, arguments: [ "init", "-backend-config=env-dev/state.tfvars" ], run_if: passed}
+                - exec: {command: terraform, arguments: [ "apply", "-var-file=env-dev/main.tfvars", "-auto-approve" ], run_if: passed}
