@@ -41,7 +41,7 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids = [data.aws_security_group.selected.id]
 
   tags = {
-    Name = var.component
+    Name = "${var.component}-${var.env}"
   }
 }
 
@@ -56,7 +56,8 @@ resource "null_resource" "ansible" {
     }
 
     inline = [
-      "sudo pip3.11 install ansible",
+      "sudo yum install python3.11-devel python3.11-pip -y",
+      "sudo pip3.11 install ansible botocore boto3 python-jenkins hvac",
       "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component}"
     ]
   }
