@@ -4,7 +4,7 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids = [data.aws_security_group.selected.id]
 
   tags = {
-    Name = "${var.component}-${var.env}"
+    Name = var.component
     monitor = "yes"
     env     = var.env
   }
