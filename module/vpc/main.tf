@@ -14,7 +14,7 @@ resource "aws_subnet" "frontend" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name = "${var.env}-frontend-subnets-${[count.index]}"
+    Name = "${var.env}-frontend-subnets-${count.index}"
   }
 }
 
@@ -26,7 +26,7 @@ resource "aws_subnet" "db" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name = "${var.env}-db-subnets-${[count.index]}"
+    Name = "${var.env}-db-subnets-${count.index}"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "backend" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name = "${var.env}-backend-subnets-${[count.index]}"
+    Name = "${var.env}-backend-subnets-${count.index}"
   }
 }
 
