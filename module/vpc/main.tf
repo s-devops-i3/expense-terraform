@@ -6,12 +6,39 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "main" {
+resource "aws_subnet" "frontend" {
+  count     = length(var.frontend_subnets)
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet_cidr_block
+
+  cidr_block = var.frontend_subnets[count.index]
+  availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name = "${var.env}-subnet"
+    Name = "${var.env}-${var.frontend_subnets}-${[count.index]}-subnet}"
+  }
+}
+
+resource "aws_subnet" "db" {
+  count     = length(var.db_subnets)
+  vpc_id     = aws_vpc.main.id
+
+  cidr_block = var.db_subnets[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = {
+    Name = "${var.env}-${var.db_subnets}-${[count.index]}-subnet}"
+  }
+}
+
+resource "aws_subnet" "backend" {
+  count     = length(var.backend_subnets)
+  vpc_id     = aws_vpc.main.id
+
+  cidr_block = var.backend_subnets[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = {
+    Name = "${var.env}-${var.backend_subnets}-${[count.index]}-subnet}"
   }
 }
 
