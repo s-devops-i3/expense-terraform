@@ -18,14 +18,16 @@
 #   vault_token   = var.vault_token
 # }
 #
-# module "mysql" {
-#   source        = "./module/app"
-#   instance_type = var.instance_type
-#   component     = "mysql"
-#   zone_id       = var.zone_id
-#   env           = var.env
-#   vault_token   = var.vault_token
-# }
+module "mysql" {
+  source        = "./module/app"
+  instance_type = var.instance_type
+  component     = "mysql"
+  zone_id       = var.zone_id
+  env           = var.env
+  vault_token   = var.vault_token
+  vpc_id        = module.vpc.vpc_id
+  db_subnet     = module.vpc.db_subnet
+}
 #----------------------------------------
 #vpc
 module "vpc" {
@@ -40,6 +42,7 @@ module "vpc" {
   backend_subnets           = var.backend_subnets
   db_subnets                = var.db_subnets
   availability_zones        = var.availability_zones
+
 }
 
 
