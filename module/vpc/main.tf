@@ -76,4 +76,10 @@ resource "aws_route" "default_vpc" {
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
 
+  tags = {
+    Name = "igw"
+  }
+}
