@@ -96,3 +96,9 @@ resource "aws_route_table" "frontend" {
     Name = "${var.env}-frontend-rt-${count.index+1}"
   }
 }
+
+resource "aws_route_table_association" "frontend" {
+  count          = length(var.frontend_subnets)
+  subnet_id      = aws_subnet.frontend.id
+  route_table_id = aws_route_table.frontend.id
+}
