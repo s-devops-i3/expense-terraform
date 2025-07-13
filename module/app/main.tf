@@ -36,26 +36,26 @@ resource "aws_instance" "instance" {
 }
 
 
-# resource "null_resource" "ansible" {
-#   provisioner "remote-exec" {
-#
-#     connection {
-#       type     = "ssh"
-#       user     = jsondecode(data.vault_generic_secret.ssh.data_json).ansible_user
-#       password = jsondecode(data.vault_generic_secret.ssh.data_json).ansible_password
-#       host     = aws_instance.instance.public_ip
-#     }
-#
-#     inline = [
-#       "sudo yum install python3.11-devel python3.11-pip -y",
-#       "sudo pip3.11 install ansible botocore boto3 python-jenkins hvac",
-#       "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible get-secrets.yml -e env=${var.env} -e role_name=${var.component} -e vault_token=${var.vault_token}",
-#       "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component} -e @app.json -e @secrets.json",
-#       "rm -rf ~/app.json ~/secrets.json"
-#
-#     ]
-#   }
-# }
+resource "null_resource" "ansible" {
+  provisioner "remote-exec" {
+
+    connection {
+      type     = "ssh"
+      user     = jsondecode(data.vault_generic_secret.ssh.data_json).ansible_user
+      password = jsondecode(data.vault_generic_secret.ssh.data_json).ansible_password
+      host     = aws_instance.instance.private_ip
+    }
+
+    inline = [
+      "sudo yum install python3.11-devel python3.11-pip -y",
+      "sudo pip3.11 install ansible botocore boto3 python-jenkins hvac",
+      "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible get-secrets.yml -e env=${var.env} -e role_name=${var.component} -e vault_token=${var.vault_token}",
+      "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component} -e @app.json -e @secrets.json",
+      "rm -rf ~/app.json ~/secrets.json"
+
+    ]
+  }
+}
 
 resource "aws_route53_record" "record" {
   name    = "${var.component}-${var.env}"
