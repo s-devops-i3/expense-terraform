@@ -60,17 +60,17 @@ resource "null_resource" "ansible" {
   }
 }
 # -----Creating Load Balancer
-resource "aws_lb" "main" {
-  name               = "${var.env}-${var.component}-alb"
-  internal           = var.lb_type == "public" ? false : true
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.main.id]
-  subnets            = var.lb_subnet
-
-  tags = {
-    Environment = "${var.env}-${var.component}-alb"
-  }
-}
+# resource "aws_lb" "main" {
+#   name               = "${var.env}-${var.component}-alb"
+#   internal           = var.lb_type == "public" ? false : true
+#   load_balancer_type = "application"
+#   security_groups    = [aws_security_group.main.id]
+#   subnets            = var.lb_subnet
+#
+#   tags = {
+#     Environment = "${var.env}-${var.component}-alb"
+#   }
+# }
 #-----------------------------
 
 
