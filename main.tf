@@ -11,6 +11,7 @@ module "frontend" {
   lb_type       = "Public"
   lb_needed     = true
   lb_subnet     = module.vpc.frontend_subnet
+  app_port      = 80
 }
 
 module "backend" {
@@ -25,7 +26,8 @@ module "backend" {
   db_subnet     = module.vpc.backend_subnet
   lb_type       = "private"
   lb_needed     = true
-  lb_subnet    = module.vpc.backend_subnet
+  lb_subnet     = module.vpc.backend_subnet
+  app_port      = 8080
 }
 #
 module "mysql" {
@@ -37,6 +39,7 @@ module "mysql" {
   vault_token   = var.vault_token
   vpc_id        = module.vpc.vpc_id
   db_subnet     = module.vpc.db_subnet
+
 }
 #----------------------------------------
 #vpc
