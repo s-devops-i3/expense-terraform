@@ -118,7 +118,7 @@ resource "aws_lb_target_group_attachment" "main" {
 
 
 resource "aws_route53_record" "server" {
-  count   = var.lb_needed ? 1 : 0
+  count   = var.lb_needed ? 0 : 1
   name    = "${var.component}-${var.env}"
   type    = "A"
   zone_id = var.zone_id
