@@ -33,6 +33,11 @@ resource "aws_instance" "instance" {
       monitor = "yes"
       env     = var.env
   }
+  lifecycle {
+    ignore_changes = [
+      ami
+    ]
+  }
 }
 
 
@@ -80,6 +85,14 @@ resource "aws_lb_target_group" "main" {
   protocol = "HTTP"
   vpc_id   = var.vpc_id
 }
+#---Creating Target Group Attachment
+resource "aws_lb_target_group_attachment" "main" {
+  count            = var.lb_needed ? 1 : 0
+  target_group_arn = aws_lb_target_group.main.arn
+  target_id        = aws_instance.instance.id
+  port             = 80
+}
+
 
 resource "aws_route53_record" "record" {
   name    = "${var.component}-${var.env}"
