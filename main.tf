@@ -10,7 +10,7 @@ module "frontend" {
   db_subnet     = module.vpc.frontend_subnet
   lb_type       = "Public"
   lb_needed     = true
-  lb_subnet     = module.vpc.frontend_subnet
+  lb_subnet     = module.vpc.public_subnets
   app_port      = 80
 }
 
