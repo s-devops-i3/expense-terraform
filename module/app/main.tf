@@ -72,11 +72,14 @@ resource "aws_lb" "main" {
     Environment = "${var.env}-${var.component}-alb"
   }
 }
-#-----------------------------
-
-
-
-
+#-----Creating Target Group
+resource "aws_lb_target_group" "main" {
+  count    = var.lb_needed ? 1 : 0
+  name     = "${var.env}-${var.component}-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+}
 
 resource "aws_route53_record" "record" {
   name    = "${var.component}-${var.env}"
