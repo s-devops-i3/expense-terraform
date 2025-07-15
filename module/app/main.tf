@@ -125,6 +125,7 @@ resource "aws_route53_record" "server" {
   ttl     = 30
 }
 resource "aws_route53_record" "lb-record" {
+  count   = var.lb_needed ? 1 : 0
   name    = "${var.component}-${var.env}"
   type    = "CNAME"
   zone_id = var.zone_id
