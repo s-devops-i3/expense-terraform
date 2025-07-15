@@ -64,72 +64,12 @@ resource "null_resource" "ansible" {
     ]
   }
 }
-# -----Creating Load Balancer
-resource "aws_lb" "main" {
-  count              = var.lb_needed ? 1 : 0
-  name               = "${var.env}-${var.component}-alb"
-  internal           = var.lb_type == "public" ? false : true
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.main.id]
-  subnets            = var.lb_subnet
-
-  tags = {
-    Environment = "${var.env}-${var.component}-alb"
-  }
-}
-#-----Creating Target Group
-resource "aws_lb_target_group" "main" {
-  count    = var.lb_needed ? 1 : 0
-  name     = "${var.env}-${var.component}-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
-  deregistration_delay = 15
-
-  health_check{
-    healthy_threshold   = 2
-    interval            = 5
-    path                = "/health"
-    timeout             = 2
-    port                = var.app_port
-    unhealthy_threshold = 2
-  }
-}
-#---Creating Listener
-resource "aws_lb_listener" "front" {
-  count    = var.lb_needed ? 1 : 0
-  load_balancer_arn = aws_lb.main[0].arn
-  port              = var.app_port
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main[0].arn
-  }
-}
-
-#---Creating Target Group Attachment
-resource "aws_lb_target_group_attachment" "main" {
-  count            = var.lb_needed ? 1 : 0
-  target_group_arn = aws_lb_target_group.main[0].arn
-  target_id        = aws_instance.instance.id
-  port             = var.app_port
-}
-
 
 resource "aws_route53_record" "server" {
-  count   = var.lb_needed ? 0 : 1
+  # count   = var.lb_needed ? 0 : 1
   name    = "${var.component}-${var.env}"
   type    = "A"
   zone_id = var.zone_id
   records = [aws_instance.instance.private_ip]
-  ttl     = 30
-}
-resource "aws_route53_record" "lb-record" {
-  count   = var.lb_needed ? 1 : 0
-  name    = "${var.env}-${var.component}"
-  type    = "CNAME"
-  zone_id = var.zone_id
-  records = [aws_lb.main[0].dns_name]
   ttl     = 30
 }
