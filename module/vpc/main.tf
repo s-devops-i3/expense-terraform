@@ -17,13 +17,13 @@ resource "aws_vpc_peering_connection" "peer" {
 }
 
 
-# resource "aws_internet_gateway" "igw" {
-#   vpc_id = aws_vpc.main.id
-#
-#   tags = {
-#     Name = "${var.env}-igw"
-#   }
-# }
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.env}-igw"
+  }
+}
 
 resource "aws_subnet" "public" {
   count     = length(var.public_subnets)
@@ -36,6 +36,9 @@ resource "aws_subnet" "public" {
     Name = "${var.env}-public-subnets-${count.index+1}"
   }
 }
+
+
+
 # resource "aws_route_table" "public" {
 #   count  = length(var.public_subnets)
 #   vpc_id = aws_vpc.main.id
@@ -182,11 +185,6 @@ resource "aws_subnet" "backend" {
 #   subnet_id      = aws_subnet.backend[count.index].id
 #   route_table_id = aws_route_table.backend[count.index].id
 # }
-resource "aws_route" "main" {
-  route_table_id            = aws_vpc.main.default_route_table_id
-  destination_cidr_block    = var.default_vpc_cidr
-  vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
-}
 
 resource "aws_route" "default_vpc" {
   route_table_id            = var.default_route_table_id
