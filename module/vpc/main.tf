@@ -12,7 +12,7 @@ resource "aws_vpc_peering_connection" "peer" {
   auto_accept  = true
 
   tags = {
-    Name = "${var.env}-peer"
+    Name = "${var.env}-vpc-to-default-vpc"
   }
 }
 
@@ -36,6 +36,21 @@ resource "aws_subnet" "public" {
     Name = "${var.env}-public-subnets-${count.index+1}"
   }
 }
+#-----creating Route Table for public subnet
+resource "aws_route_table" "public" {
+  count  = length(var.public_subnets)
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block                = var.default_vpc_cidr
+    vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+  }
+
+  tags = {
+    Name = "${var.env}-public-rt-${count.index + 1}"
+  }
+}
+#------
 
 
 
@@ -89,7 +104,22 @@ resource "aws_subnet" "frontend" {
     Name = "${var.env}-frontend-subnets-${count.index+1}"
   }
 }
+#-----creating Route Table for frontend subnet
+resource "aws_route_table" "frontend" {
+  count  = length(var.frontend_subnets)
+  vpc_id = aws_vpc.main.id
 
+  route {
+    cidr_block                = var.default_vpc_cidr
+    vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+  }
+
+  tags = {
+    Name = "${var.env}-frontend-rt-${count.index + 1}"
+  }
+
+}
+#------
 # resource "aws_route_table" "frontend" {
 #   count  = length(var.frontend_subnets)
 #   vpc_id = aws_vpc.main.id
@@ -126,7 +156,22 @@ resource "aws_subnet" "db" {
     Name = "${var.env}-db-subnets-${count.index+1}"
   }
 }
+#-----creating Route Table for db subnet
+resource "aws_route_table" "db" {
+  count  = length(var.db_subnets)
+  vpc_id = aws_vpc.main.id
 
+  route {
+    cidr_block                = var.default_vpc_cidr
+    vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+  }
+
+  tags = {
+    Name = "${var.env}-db-rt-${count.index + 1}"
+  }
+
+}
+#------
 # resource "aws_route_table" "db" {
 #   count  = length(var.db_subnets)
 #   vpc_id = aws_vpc.main.id
@@ -162,6 +207,22 @@ resource "aws_subnet" "backend" {
     Name = "${var.env}-backend-subnets-${count.index+1}"
   }
 }
+#-----creating Route Table for backend subnet
+resource "aws_route_table" "backend" {
+  count  = length(var.backend_subnets)
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block                = var.default_vpc_cidr
+    vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+  }
+
+  tags = {
+    Name = "${var.env}-backend-rt-${count.index + 1}"
+  }
+
+}
+#------
 
 # resource "aws_route_table" "backend" {
 #   count  = length(var.backend_subnets)
