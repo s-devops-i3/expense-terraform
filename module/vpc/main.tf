@@ -17,13 +17,13 @@ resource "aws_vpc_peering_connection" "peer" {
 }
 
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.env}-igw"
-  }
-}
+# resource "aws_internet_gateway" "igw" {
+#   vpc_id = aws_vpc.main.id
+#
+#   tags = {
+#     Name = "${var.env}-igw"
+#   }
+# }
 
 resource "aws_subnet" "public" {
   count     = length(var.public_subnets)
@@ -44,30 +44,30 @@ resource "aws_route_table" "public" {
     cidr_block = var.default_vpc_cidr
     vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
   }
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
+  # route {
+  #   cidr_block = "0.0.0.0/0"
+  #   gateway_id = aws_internet_gateway.igw.id
+  # }
 
   tags = {
     Name = "${var.env}-public-rt-${count.index+1}"
   }
 }
 
-resource "aws_eip" "eip" {
-  count             = length(var.public_subnets)
-  domain            = "vpc"
-  }
+# resource "aws_eip" "eip" {
+#   count             = length(var.public_subnets)
+#   domain            = "vpc"
+#   }
 
-resource "aws_nat_gateway" "ngw" {
-  count  = length(var.public_subnets)
-  allocation_id = aws_eip.eip[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
-
-  tags = {
-    Name = "${var.env}-ngw-${count.index+1}"
-  }
-}
+# resource "aws_nat_gateway" "ngw" {
+#   count  = length(var.public_subnets)
+#   allocation_id = aws_eip.eip[count.index].id
+#   subnet_id     = aws_subnet.public[count.index].id
+#
+#   tags = {
+#     Name = "${var.env}-ngw-${count.index+1}"
+#   }
+# }
 
 resource "aws_route_table_association" "public" {
   count          = length(var.public_subnets)
@@ -95,10 +95,10 @@ resource "aws_route_table" "frontend" {
     cidr_block = var.default_vpc_cidr
     vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
   }
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
-  }
+  # route {
+  #   cidr_block = "0.0.0.0/0"
+  #   nat_gateway_id = aws_nat_gateway.ngw[count.index].id
+  # }
 
   tags = {
     Name = "${var.env}-frontend-rt-${count.index+1}"
@@ -132,10 +132,10 @@ resource "aws_route_table" "db" {
     cidr_block = var.default_vpc_cidr
     vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
   }
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
-  }
+  # route {
+  #   cidr_block = "0.0.0.0/0"
+  #   nat_gateway_id = aws_nat_gateway.ngw[count.index].id
+  # }
   tags = {
     Name = "${var.env}-db-rt-${count.index+1}"
   }
@@ -168,10 +168,10 @@ resource "aws_route_table" "backend" {
     cidr_block = var.default_vpc_cidr
     vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
   }
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
-  }
+  # route {
+  #   cidr_block = "0.0.0.0/0"
+  #   nat_gateway_id = aws_nat_gateway.ngw[count.index].id
+  # }
   tags = {
     Name = "${var.env}-backend-rt-${count.index+1}"
   }
