@@ -4,7 +4,7 @@ variable "env" {}
 variable "zone_id" {}
 variable "vault_token" {}
 variable "vpc_id" {}
-variable "db_subnet" {}
+variable "subnets" {}
 variable "lb_needed" {
   default = false
 }
