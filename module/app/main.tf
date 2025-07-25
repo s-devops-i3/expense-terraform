@@ -21,6 +21,30 @@ egress {
 
 }
 }
+#----Security group for Load Balancer
+resource "aws_security_group" "lb-sg" {
+  name        = "${var.component}-${var.env}-lbsg"
+  description = "${var.component}-${var.env}-lbsg"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "${var.component}-${var.env}-sg"
+  }
+  ingress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  }
+}
 
 resource "aws_instance" "instance" {
   ami                    = data.aws_ami.ami.image_id
@@ -67,11 +91,19 @@ resource "null_resource" "ansible" {
 }
 
 resource "aws_route53_record" "server" {
-  # count   = var.lb_needed ? 0 : 1
+  count   = var.lb_needed ? 0 : 1
   name    = "${var.component}-${var.env}"
   type    = "A"
   zone_id = var.zone_id
   records = [aws_instance.instance.private_ip]
+  ttl     = 30
+}
+resource "aws_route53_record" "lb" {
+  count   = var.lb_needed ? 1 : 0
+  name    = "${var.component}-${var.env}"
+  type    = "CNAME"
+  zone_id = var.zone_id
+  records = [aws_lb.main[0].dns_name]
   ttl     = 30
 }
 
