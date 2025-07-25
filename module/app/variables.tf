@@ -17,5 +17,5 @@ variable "lb_subnet" {
 variable "app_port" {
   default = null
 }
-variable "bastion_nodes" {}
+# variable "bastion_nodes" {}
 
