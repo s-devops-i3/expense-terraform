@@ -15,8 +15,6 @@ resource "aws_vpc_peering_connection" "peer" {
     Name = "${var.env}-vpc-to-default-vpc"
   }
 }
-
-
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
@@ -24,7 +22,6 @@ resource "aws_internet_gateway" "igw" {
     Name = "${var.env}-igw"
   }
 }
-
 resource "aws_subnet" "public" {
   count     = length(var.public_subnets)
   vpc_id     = aws_vpc.main.id
@@ -54,14 +51,27 @@ resource "aws_route_table" "public" {
     Name = "${var.env}-public-rt-${count.index + 1}"
   }
 }
+resource "aws_eip" "ngw" {
+  count  = length(var.public_subnets)
+  domain   = "vpc"
+}
+
+resource "aws_nat_gateway" "ngw" {
+  count  = length(var.public_subnets)
+  allocation_id = aws_eip.ngw[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  tags = {
+    Name = "${var.env}-ngw-${count.index + 1}"
+  }
+}
+
 #------Subnet Association to public subnet
 resource "aws_route_table_association" "public" {
   count          = length(var.public_subnets)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
 }
-
-
 
 # resource "aws_route_table" "public" {
 #   count  = length(var.public_subnets)
