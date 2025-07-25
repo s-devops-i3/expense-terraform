@@ -75,16 +75,16 @@ resource "aws_route53_record" "server" {
   ttl     = 30
 }
 #
-# resource "aws_lb" "main" {
-#   count              = var.lb_needed ? 1 : 0
-#   name               = "${var.env}-${var.component}-alb"
-#   internal           = var.lb_type == "public" ? false : true
-#   load_balancer_type = "application"
-#   security_groups    = [aws_security_group.main.id]
-#   subnets            = var.lb_subnet
-#
-#   tags = {
-#     Environment = "${var.env}-${var.component}-alb"
-#   }
-# }
+resource "aws_lb" "main" {
+  count              = var.lb_needed ? 1 : 0
+  name               = "${var.env}-${var.component}-alb"
+  internal           = var.lb_type == "Public" ? false : true
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.main.id]
+  subnets            = var.lb_subnet
+
+  tags = {
+    Environment = "${var.env}-${var.component}-alb"
+  }
+}
 #
