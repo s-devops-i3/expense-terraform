@@ -6,23 +6,74 @@ resource "aws_security_group" "main" {
   tags = {
     Name = "${var.component}-${var.env}-sg"
   }
-ingress {
+  ingress {
+    from_port        = var.app_port
+    to_port          = var.app_port
+    protocol         = "TCP"
+    cidr_blocks      = var.server_app_port_sg_cidr
+  }
+
+  ingress {
+  from_port        = 22
+  to_port          = 22
+  protocol         = "TCP"
+  cidr_blocks      = var.bastion_nodes
+}
+  ingress {
+    from_port        = 9100
+    to_port          = 9100
+    protocol         = "TCP"
+    cidr_blocks      = var.prometheus_nodes
+  }
+
+  egress {
   from_port        = 0
   to_port          = 0
   protocol         = "-1"
   cidr_blocks      = ["0.0.0.0/0"]
 
 }
-egress {
-  from_port        = 0
-  to_port          = 0
-  protocol         = "-1"
-  cidr_blocks      = ["0.0.0.0/0"]
-
 }
+#---------Load balancer security group
+resource "aws_security_group" "main" {
+  name        = "${var.component}-${var.env}-lbsg"
+  description = "${var.component}-${var.env}-lbsg"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "${var.component}-${var.env}-lbsg"
+  }
+  ingress {
+    from_port        = var.app_port
+    to_port          = var.app_port
+    protocol         = "TCP"
+    cidr_blocks      = var.lb_app_port_sg_cidr
+  }
+
+  ingress {
+    from_port        = 22
+    to_port          = 22
+    protocol         = "TCP"
+    cidr_blocks      = var.bastion_nodes
+  }
+  ingress {
+    from_port        = 9100
+    to_port          = 9100
+    protocol         = "TCP"
+    cidr_blocks      = var.prometheus_nodes
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  }
 }
 #----Security group for Load Balancer
 resource "aws_security_group" "lb-sg" {
+  count       = var.lb_needed ? 1 : 0
   name        = "${var.component}-${var.env}-lbsg"
   description = "${var.component}-${var.env}-lbsg"
   vpc_id      = var.vpc_id
@@ -113,7 +164,7 @@ resource "aws_lb" "main" {
   name               = "${var.env}-${var.component}-alb"
   internal           = var.lb_type == "Public" ? false : true
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.main.id]
+  security_groups    = [aws_security_group.lb-sg[0].id]
   subnets            = var.lb_subnet
 
   tags = {
