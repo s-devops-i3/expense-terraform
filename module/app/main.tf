@@ -83,7 +83,9 @@ resource "aws_instance" "instance" {
 
 
 resource "null_resource" "ansible" {
-
+  triggers = {
+    instance = aws_instance.instance.id
+  }
   connection {
     type     = "ssh"
     user     = jsondecode(data.vault_generic_secret.ssh.data_json).ansible_user
