@@ -1,4 +1,4 @@
-resource "aws_db_instance" "default" {
+resource "aws_db_instance" "main" {
   identifier           = "${var.component}-${var.env}"
   allocated_storage    = var.allocated_storage
   db_name              = "my-db"
