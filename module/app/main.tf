@@ -93,16 +93,17 @@ resource "null_resource" "ansible" {
 
   provisioner "remote-exec" {
     inline = [
+      "rm -f ~/*.json",
       "sudo yum install python3.11-devel python3.11-pip -y",
       "sudo pip3.11 install ansible botocore boto3 python-jenkins hvac",
       "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible get-secrets.yml -e env=${var.env} -e role_name=${var.component} -e vault_token=${var.vault_token}",
-      "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component} -e @app.json -e @secrets.json"
+      "ansible-pull -i localhost, -U https://github.com/s-devops-i3/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component} -e  @~/final.json"
     ]
   }
   provisioner "remote-exec" {
 
     inline = [
-      "rm -rf ~/app.json ~/secrets.json"
+      "rm -rf ~/app.json ~/final.json"
     ]
   }
 }
