@@ -5,8 +5,8 @@ resource "aws_db_instance" "default" {
   engine               = var.engine
   engine_version       = var.engine_version
   instance_class       = var.instance_class
-  username             = jsondecode(data.vault_generic_secret.rds.data_json).ansible_user
-  password             = jsondecode(data.vault_generic_secret.rds.data_json).ansible_password
+  username             = jsondecode(data.vault_generic_secret.rds.data_json).rds_username
+  password             = jsondecode(data.vault_generic_secret.rds.data_json).rds_password
   parameter_group_name = aws_db_parameter_group.main.name
   skip_final_snapshot  = var.skip_final_snapshot
   multi_az             = false
