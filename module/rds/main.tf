@@ -1,7 +1,7 @@
 resource "aws_db_instance" "main" {
   identifier           = "${var.component}${var.env}"
   allocated_storage    = var.allocated_storage
-  db_name              = "my-db"
+  db_name              = "mydb"
   engine               = var.engine
   engine_version       = var.engine_version
   instance_class       = var.instance_class
