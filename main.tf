@@ -1,46 +1,63 @@
-module "frontend" {
-  depends_on = [module.backend]
-  source        = "./module/app"
-  instance_type = var.instance_type
-  component     = "frontend"
-  env           = var.env
-  zone_id       = var.zone_id
-  vault_token   = var.vault_token
-  vpc_id        = module.vpc.vpc_id
-  subnets     = module.vpc.frontend_subnet
-  lb_type       = "Public"
-  lb_needed     = true
-  lb_subnet     = module.vpc.public_subnets
-  app_port      = 80
-  bastion_nodes = var.bastion_nodes
-  prometheus_nodes = var.prometheus_nodes
-  server_app_port_sg_cidr = var.public_subnets
-  lb_app_port_sg_cidr     = ["0.0.0.0/0"]
-  lb_ports                = {http:80, https:443}
-  certificate_arn         = var.certificate_arn
-}
+# module "frontend" {
+#   depends_on = [module.backend]
+#   source        = "./module/app"
+#   instance_type = var.instance_type
+#   component     = "frontend"
+#   env           = var.env
+#   zone_id       = var.zone_id
+#   vault_token   = var.vault_token
+#   vpc_id        = module.vpc.vpc_id
+#   subnets     = module.vpc.frontend_subnet
+#   lb_type       = "Public"
+#   lb_needed     = true
+#   lb_subnet     = module.vpc.public_subnets
+#   app_port      = 80
+#   bastion_nodes = var.bastion_nodes
+#   prometheus_nodes = var.prometheus_nodes
+#   server_app_port_sg_cidr = var.public_subnets
+#   lb_app_port_sg_cidr     = ["0.0.0.0/0"]
+#   lb_ports                = {http:80, https:443}
+#   certificate_arn         = var.certificate_arn
+# }
+#
+# module "backend" {
+#   depends_on = [module.rds]
+#   source        = "./module/app"
+#   instance_type = var.instance_type
+#   component     = "backend"
+#   env           = var.env
+#   zone_id       = var.zone_id
+#   vault_token   = var.vault_token
+#   vpc_id        = module.vpc.vpc_id
+#   subnets     = module.vpc.backend_subnet
+#   lb_type       = "private"
+#   lb_needed     = true
+#   lb_subnet     = module.vpc.backend_subnet
+#   app_port      = 8080
+#   bastion_nodes = var.bastion_nodes
+#   prometheus_nodes = var.prometheus_nodes
+#   server_app_port_sg_cidr = concat(var.frontend_subnets,var.backend_subnets)
+#   lb_app_port_sg_cidr     = var.frontend_subnets
+#   lb_ports                = {http: 8080}
+#
+# }
+module "backend"{
+  source = "./module/app-asg"
 
-module "backend" {
-  depends_on = [module.rds]
-  source        = "./module/app"
-  instance_type = var.instance_type
-  component     = "backend"
-  env           = var.env
-  zone_id       = var.zone_id
-  vault_token   = var.vault_token
-  vpc_id        = module.vpc.vpc_id
-  subnets     = module.vpc.backend_subnet
-  lb_type       = "private"
-  lb_needed     = true
-  lb_subnet     = module.vpc.backend_subnet
-  app_port      = 8080
-  bastion_nodes = var.bastion_nodes
-  prometheus_nodes = var.prometheus_nodes
+
+  app_port                = 8080
+  bastion_nodes           = var.bastion_nodes
+  component               = "backend"
+  env                     = var.env
+  instance_type           = var.instance_type
+  max_size                = var.max_size
+  min_size                = var.min_size
+  prometheus_nodes        = var.prometheus_nodes
   server_app_port_sg_cidr = concat(var.frontend_subnets,var.backend_subnets)
-  lb_app_port_sg_cidr     = var.frontend_subnets
-  lb_ports                = {http: 8080}
-
+  subnets                 = var.backend_subnets
+  vpc_id                  = module.vpc.vpc_id
 }
+
 module "rds"{
   source = "./module/rds"
 

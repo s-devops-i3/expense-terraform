@@ -17,4 +17,5 @@ availability_zones = ["us-east-1a", "us-east-1b"]
 bastion_nodes      = ["172.31.30.120/32"]
 prometheus_nodes   = ["172.31.80.62/32"]
 certificate_arn    = "arn:aws:acm:us-east-1:471112569439:certificate/296670a9-fb78-4796-86ad-7f07b42b7178"
-
+min_size           = 1
+max_size           = 2
