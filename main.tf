@@ -43,7 +43,7 @@
 # }
 module "frontend"{
   source = "./module/app-asg"
-
+  depends_on              = [module.backend]
 
   app_port                = 80
   bastion_nodes           = var.bastion_nodes
@@ -68,7 +68,7 @@ module "frontend"{
 module "backend"{
   source = "./module/app-asg"
 
-
+  depends_on              = [module.rds]
   app_port                = 8080
   bastion_nodes           = var.bastion_nodes
   component               = "backend"
